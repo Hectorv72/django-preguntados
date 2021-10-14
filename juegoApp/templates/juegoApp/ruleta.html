@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ruleta.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/util.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centrado.css' %}">
+    <title>Ruleta</title>
+</head>
+
+<script src="{% static 'js/node_modules/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'js/winwheel/Winwheel.min.js' %}"></script>
+<script src="{% static 'js/gsap-public/minified/gsap.min.js' %}"></script>
+<script src="{% static 'js/node_modules/sweetalert/dist/sweetalert.min.js' %}"></script>
+<body>
+    <div class="container-login100 colorfondo">
+	<div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-33 border"  style="border-radius:20px; background-color:white; ">
+    <div class="container">
+        <table style="text-align: center;height: 200px;">
+            <tr>
+                <td colspan="2" style="font-family: Versa; font-size: 40px;">
+                    <label>PREGUNTADOS EPET7</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <h2>¡Gira la ruleta!</h2>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <canvas onclick="Girar();" id='canvas' width="400" height="400" data-responsiveMinWidth="180" data-responsiveScaleHeight="true"></canvas>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <form action="{% url 'juego' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="number" id="guardar" name="rul" hidden>
+                        
+                        <button disabled id="Enviar" hidden>Jugar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="Girar()" class="btn btn-outline-primary btn-lg ">Girar</button>
+                </td>
+            </tr>
+            
+        </table>
+        </div>
+    </div>
+    </div>
+    </div>
+</body>
+<script>
+    var parte_aleatoria;
+    generar_color()
+
+    function generar_color(){
+        hexadecimal = new Array("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F")
+        color_aleatorio = "#";
+        for (i=0;i<6;i++){
+            posarray = aleatorio(0,hexadecimal.length)
+            color_aleatorio += hexadecimal[posarray]
+        }
+        parte_aleatoria = color_aleatorio;
+    }
+
+    function aleatorio(inferior,superior){
+        numPosibilidades = superior - inferior
+        aleat = Math.random() * numPosibilidades
+        aleat = Math.floor(aleat)
+        return parseInt(inferior) + aleat
+    }
+
+
+
+    var miRuleta = new Winwheel({
+    'numSegments': {{ Cantidad }}+1, // Número de segmentos
+    'outerRadius' : 170, // Radio externo 
+    'drawText'          : true,              // Code drawn text can be used with segment images.
+    'textFontSize'      : 16,
+    'textAlignment'     : 'inner',
+    'textMargin'        : 40,
+    'textFontFamily'    : 'Versa',
+    'textStrokeStyle'   : 'black',
+    'textLineWidth'     : 1.5,
+    'textFillStyle'     : 'white',
+
+    'segments':[ // Datos de los segmentos
+    {'fillStyle': parte_aleatoria , 'text': 'Variado', 'value': '999', 'imagen': '/juegoApp/media/iconos/dice.gif'},
+    
+    {% for i in Categorias %}
+    {
+    'fillStyle': '{{ i.color }}', 'text': '{{ i.nombre }}', 'value': '{{ i.id }}', 'imagen': '{{ i.icono.url }}'
+    },
+    {% endfor %}
+    ],
+    'animation': {
+        'type': 'spinToStop', // Giro y alto
+        'duration': 5, // Duración de giro
+        'spins': 10,
+        'callbackFinished': 'Mensaje()', // Función para mostrar mensaje
+        'callbackAfter': 'dibujarIndicador()' // Funciona de pintar indicador
+    },
+    
+    });
+    miRuleta.draw();
+    document.ready = DuracionGiro();
+
+    function DuracionGiro(){
+        var numero =  parseInt(Math.random() * 10) + 5;
+        //miRuleta.animation.duration = numero;
+    }
+
+</script>
+<script>
+    var verif;
+    document.ready = verif = 0;
+    function Girar(){
+        if (verif == 0){
+            miRuleta.startAnimation();
+            verif = 1;
+        }
+    }
+
+
+    // Funciones complementarias
+    dibujarIndicador();
+    function Mensaje() {
+    var SegmentoSeleccionado = miRuleta.getIndicatedSegment();
+    //alert("Elemento seleccionado:" + SegmentoSeleccionado.text + "!");
+    miRuleta.stopAnimation(false);
+
+    var Resultado = SegmentoSeleccionado.value;
+    console.log(Resultado)
+    //document.getElementById('Enviar').disabled = false;
+    document.getElementById('guardar').value = Resultado;
+    
+    swal({
+        title: SegmentoSeleccionado.text,
+        icon: SegmentoSeleccionado.imagen,
+        button:{
+            text: "¡Vamos!"
+        }
+    })
+    .then((value) => {
+        var button = document.getElementById('Enviar');
+        button.form.submit();
+    });
+
+    miRuleta.rotationAngle = 0;
+    //miRuleta.draw();
+    dibujarIndicador();
+    }
+    function dibujarIndicador() {
+    var ctx = miRuleta.ctx;
+    ctx.strokeStyle = 'navy';
+    ctx.fillStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(190, 210);
+    ctx.lineTo(210, 210);
+    ctx.lineTo(200, 170);
+    ctx.lineTo(191, 210);
+    ctx.fill();
+    }
+</script>
+</html>

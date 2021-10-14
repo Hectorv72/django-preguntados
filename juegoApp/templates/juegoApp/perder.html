@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/countdownbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centrado.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/util.css' %}">
+    <title>informacion</title>
+</head>
+
+<script src="{% static 'js/node_modules/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'js/node_modules/sweetalert/dist/sweetalert.min.js' %}"></script>
+<body>
+    <div class="container-login100 colorfondo">
+    <div class="container border" style="border-radius:20px; background-color:white; ">
+        <table style="text-align: center ;width:100%; height: 200px;">
+            <tr>
+                <td colspan="2">
+                    <h2>Información</h2>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div id="lol" class="container border" style="border-radius:20px ">
+                    <h5>{{ Pregunta.informacion }}</h5>
+                    </div>
+                </td>
+            </tr>
+
+            <tr style="height: 50px;">
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <h3><label id="MensajeAliento"></label></h3>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <h3><label id="Puntos"></label></h3>
+                </td>
+            </tr>
+
+            <tr  style="height: 100px;">
+                <td>
+                    <a href="{% url 'home' %}"><button class="btn btn-outline-primary btn-lg">Salir</button></a>
+                    <button id="guardar" onclick="mostMensaje()" class="btn btn-outline-primary btn-lg">Guardar</button>
+                    <form action="{% url 'home' %}" method="POST">
+                        {% csrf_token %}
+                        {{ Formulario.nombre }}
+                        {{ Formulario.puntaje }}
+                        <input type="text" id="idvalid" name="validador" hidden>
+                        <button id="mandar" hidden></button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    </div>
+</body>
+<script>
+    var Puntaje = localStorage.getItem('Puntaje')
+    Puntaje = parseInt(Puntaje);
+
+    //document.getElementById('id_nombre').hidden = true;
+
+    document.getElementById('Puntos').innerHTML = "Puntaje:"+Puntaje;
+
+    if(Puntaje > 0){
+        document.getElementById('MensajeAliento').innerHTML = "Bien hecho :)";
+    }else if(Puntaje > 10){
+        document.getElementById('MensajeAliento').innerHTML = "¡FELICIDADES!";
+    }else{
+        document.getElementById('MensajeAliento').innerHTML = "Que mal :( , vuelve a intentarlo";
+        document.getElementById('guardar').hidden = true;
+    }
+
+    var validar = false;
+    var db = []
+
+    {% for i in Jugadores %}
+        db.push('{{ i }}');
+    {% endfor %}
+
+    
+    function Iniciar(val){
+        document.getElementById('id_nombre').value = val;
+        document.getElementById('id_puntaje').value = Puntaje;
+        document.getElementById('idvalid').value = val;
+        var button = document.getElementById('mandar');
+        button.form.submit();
+    }
+
+    function mostMensaje(){
+        validar = false;
+        swal("INGRESA TU NOMBRE", {
+        content: "input",
+        })
+        .then((value) => {
+            var nombre = value;
+            for (var i = 0; i < db.length ; i++){
+                if (value == db[i] || value == "" || value == null && validar == false){
+                    console.log(i);
+                    validar = true;
+                }
+            }
+            if (validar == false ){
+                
+                swal({
+                title: "Se guardo el puntaje",
+                text: "¡Gracias por jugar!",
+                icon: "success",
+                buttons: {
+                    comenzar: {
+                    text: "terminar",
+                    comen: true,
+                    }
+                },
+                })
+                    .then((comen) => {
+                        Iniciar(nombre);
+                    });
+            }else{
+                var textoError;
+                if (nombre == null || nombre == " "){textoError = "Debe ingresar algun nombre"}
+                else{ textoError = "¡Ese nombre ya existe!"}
+                swal({
+                title: "Error",
+                text: textoError,
+                icon: "error",
+                buttons: {
+                    volver: {
+                    text: "Volver",
+                    valor: false,
+                    }
+                },
+
+                })
+            }
+        });
+    }
+
+</script>
+
+</html>

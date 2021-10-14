@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+    <table style="width: 700px;">
+        {% for i in Comentarios %}
+        {% if i.respuesta == null %}
+
+        <tr>
+            <td colspan="3" style="border:solid;border-width: 1px;">
+
+                autor:{{ i.autor }}<br>
+                {{ i.comentario }} <br>
+
+                <form action="{% url 'prueba' %}#comentario" method="get">
+                    <button value="{{ i.id }}" name="r">Responder</button>
+                </form>
+
+                <form action="{% url 'elimcom' %}" method="POST">
+                    {% csrf_token %}
+                    <button value="{{ i.id }}" name="com">Eliminar</button>
+                </form>
+
+            </td>
+        </tr>
+
+            {% for r in Comentarios %}
+                {% if r.respuesta == i.id %}
+                <tr>
+                    <td colspan="3" style="padding-left: 50px;border:solid;border-width: 1px; border-color: blue;">
+                    autor:{{ r.autor }}<br>{{ r.comentario }}
+                        <form action="{% url 'elimcom' %}" method="POST">
+                            {% csrf_token %}
+                            <button value="{{ r.id }}" name="com">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+
+            {% if i.id == idComentario %}
+
+                <form action="{% url 'prueba' %}?r={{ i.id }}" method="post">
+                {% csrf_token %}
+                    <tr>
+                        <td style="padding-left: 100px;border:solid;border-width: 1px; border-color: red;">
+                            Autor: {{ FormComentario.autor }}
+                            <input type="number" name="respuesta" value="{{ idComentario }}" readonly hidden>
+                            <a id="comentario"><textarea name="comentario" cols="30" rows="1"></textarea></a>
+                            <button>Comentar</button>
+                        </td>
+                    </tr>
+                </form>
+
+            {% endif %}
+        
+        {% endif %}
+        {% endfor %}
+    </table>
+
+    <table >
+        <form action="{% url 'prueba' %}" method="post">
+        {% csrf_token %}
+        <tr>
+            <td>Autor: {{ FormComentario.autor }}</td>
+            <td colspan="2"><a id="comentario"><textarea name="comentario" cols="30" rows="1"></textarea></a></td>
+            <td colspan="2"><button>Comentar</button></td>
+        </tr>
+        </form>
+    </table>
+
+
+</body>
+</html>

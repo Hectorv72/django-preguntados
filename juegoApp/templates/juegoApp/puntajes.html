@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/countdownbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centrado.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/util.css' %}">
+    <title>Preguntas</title>
+</head>
+<script src="{% static 'js/node_modules/sweetalert/dist/sweetalert.min.js' %}"></script>
+<body>
+    <div class="container-login100 colorfondo">
+    <div class="container border" style="border-radius:20px; background-color:white; ">
+        <table style="text-align: center ; margin-left: 25%; width:50%;">
+            <tr>
+                <td colspan="2">
+                    <a href="{% url 'home' %}"><button class="btn btn-outline-primary btn-lg btn-block">Volver</button></a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="height: 60px;">
+                    <h1>TABLA DE PUNTAJES</h1>
+                </td>
+            </tr>
+            <tr>
+                <td><h3>Nombre</h3></td>
+                <td><h3>Puntos</h3></td>
+            </tr>
+            {% for i in Datos %}
+            <tr>
+                <td><h4>{{ i.nombre }}</h4></td>
+                <td><h4>{{ i.puntaje }}</h4></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    </div>
+</body>
+</html>

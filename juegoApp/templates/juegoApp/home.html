@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/countdownbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centrado.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/centro/util.css' %}">
+    <title>Preguntas</title>
+</head>
+<script src="{% static 'js/node_modules/sweetalert/dist/sweetalert.min.js' %}"></script>
+<body>
+    <div class="container-login100 colorfondo">
+    <div class="container border" style="border-radius:20px; background-color:white; ">
+        <table style="text-align: center ;width:100%; height: 200px;">
+            <tr>
+                <td>
+                    <h1>PREGUNTADOS EPET7</h1>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="{% url 'ruleta' %}"><button class="btn btn-outline-primary btn-lg" >Jugar</button></a>
+                    <a href="{% url 'score' %}"><button class="btn btn-outline-primary btn-lg" >Puntajes</button></a>
+                    <!---<button onclick="agradecimientos()" class="btn btn-outline-primary btn-lg" >Agradecimientos</button>-->
+                </td>
+                
+            </tr>
+        </table>
+    </div>
+    </div>
+</body>
+<script>
+    localStorage.setItem('Puntaje', 0);
+    var Puntaje = localStorage.getItem('Puntaje')
+    console.log(Puntaje);
+
+    function agradecimientos(){
+        swal({
+        title: "¡Gracias Mecánica 6to!",
+        text: "por ayudar aportando preguntas",
+        icon: "/juegoApp/media/iconos/corazon.gif",
+        button:{
+            text: "ok..."
+        }
+        })
+        .then((value) => {
+            swal({
+                text: "No se olviden de ver sus exposiciones",
+            });
+        });
+    }
+</script>
+</html>
